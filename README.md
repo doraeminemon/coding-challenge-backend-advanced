@@ -28,20 +28,18 @@ Implement a basic Node.js backend system for an NFT airdrop application using Ex
    - Implement a basic API Key authentication.
    - Role-based access control with two roles: `admin` and `public`. Admins have full access, while public users have limited access.
 
-5. **Bonus**: Unit Testing with Jest
+5. **Unit Testing with Jest**
 
    - Write unit tests focusing on critical business logic.
 
-6. **Bonus**: Replace In-Memory Store(s) with MongoDB.
-7. **Bonus**: Integrate a queue system for asynchronous airdrop processing and batch airdrop processing.
-8. **Bonus**: Implement airdrop function with smart contract interaction using Ethers.js / Web3.js.
+6. **Bonus**: Integrate a queue system for asynchronous airdrop processing and batch airdrop processing.
+7. **Bonus**: Implement airdrop function with smart contract interaction using Ethers.js.
 
 ## Requirements
 
 - TypeScript and ES6+ code.
 - Emphasis on maintainability and understandable code structure.
 - Flexibility to modify the provided starter code.
-- For bonus objectives, a brief explanation of your solution and design choices is sufficient. Implementation is a plus.
 
 ## Evaluation Criteria
 
