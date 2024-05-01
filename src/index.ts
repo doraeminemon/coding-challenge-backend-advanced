@@ -7,9 +7,18 @@ import {
   redeemNFT,
   deleteAirdrop,
 } from "./controllers/airdrop";
+import { param, validationResult, checkSchema } from "express-validator";
 
 const app: Express = express();
 const port = process.env.PORT || "8888";
+
+const checkAirdropSchema = checkSchema({
+  contractAddress: { isString: true },
+  recipient: { isString: true },
+  quantity: { isNumeric: true },
+});
+
+const checkId = param("id").isString().escape();
 
 app.use(express.json());
 
@@ -22,42 +31,75 @@ app.get("/airdrops", async (req: Request, res: Response) => {
   res.send(airdrops);
 });
 
-app.get("/airdrops/:id", async (req: Request, res: Response) => {
+app.get("/airdrops/:id", checkId, async (req: Request, res: Response) => {
+  const result = validationResult(req);
+  if (!result.isEmpty) {
+    res.send({ errors: result.array() });
+  }
   const airdrop = await getAirdrop(req.params.id);
   res.send(airdrop);
 });
 
-app.post("/airdrops", async (req: Request, res: Response) => {
-  const body = req.body;
-  const contractAddress = body.contractAddress;
-  const recipient = body.recipient;
-  const quantity = body.quantity;
-  const success = await airdropNFT(contractAddress, recipient, quantity);
-  res.send({ success });
-});
+app.post(
+  "/airdrops",
+  checkAirdropSchema,
+  async (req: Request, res: Response) => {
+    const result = validationResult(req);
+    if (!result.isEmpty) {
+      res.send({ errors: result.array() });
+    }
+    const body = req.body;
+    const contractAddress = body.contractAddress;
+    const recipient = body.recipient;
+    const quantity = body.quantity;
+    const success = await airdropNFT(contractAddress, recipient, quantity);
+    res.send({ success });
+  }
+);
 
-app.put("/airdrops/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const body = req.body;
-  const contractAddress = body.contractAddress;
-  const recipient = body.recipient;
-  const quantity = body.quantity;
-  const success = await updateAirdrop(id, {
-    nftContractAddress: contractAddress,
-    recipient,
-    quantity,
-  });
-  res.send({ success });
-});
+app.put(
+  "/airdrops/:id",
+  checkId,
+  checkAirdropSchema,
+  async (req: Request, res: Response) => {
+    const result = validationResult(req);
+    if (!result.isEmpty) {
+      res.send({ errors: result.array() });
+    }
+    const id = req.params.id;
+    const body = req.body;
+    const contractAddress = body.contractAddress;
+    const recipient = body.recipient;
+    const quantity = body.quantity;
+    const success = await updateAirdrop(id, {
+      nftContractAddress: contractAddress,
+      recipient,
+      quantity,
+    });
+    res.send({ success });
+  }
+);
 
-app.post("/airdrops/redeem/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const walletAddress = req.body.walletAddress;
-  const success = await redeemNFT(id, walletAddress);
-  res.send({ success });
-});
+app.post(
+  "/airdrops/redeem/:id",
+  checkId,
+  async (req: Request, res: Response) => {
+    const result = validationResult(req);
+    if (!result.isEmpty) {
+      res.send({ errors: result.array() });
+    }
+    const id = req.params.id;
+    const walletAddress = req.body.walletAddress;
+    const success = await redeemNFT(id, walletAddress);
+    res.send({ success });
+  }
+);
 
-app.delete("/airdrops/:id", async (req: Request, res: Response) => {
+app.delete("/airdrops/:id", checkId, async (req: Request, res: Response) => {
+  const result = validationResult(req);
+  if (!result.isEmpty) {
+    res.send({ errors: result.array() });
+  }
   const id = req.params.id;
   const success = await deleteAirdrop(id);
   res.send({ success });
