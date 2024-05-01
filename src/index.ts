@@ -124,10 +124,6 @@ app.post(
     const id = req.params.id;
     const walletAddress = req.body.walletAddress;
     const success = await redeemNFT(id, walletAddress);
-    if (!success) {
-      res.status(400).send({ success });
-      return;
-    }
     res.send({ success });
   }
 );
