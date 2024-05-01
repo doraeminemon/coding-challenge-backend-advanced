@@ -1,27 +1,46 @@
 import { nanoid } from "nanoid";
 
+export type Airdrop = {
+  nftContractAddress: string;
+  redeemedBy: string[];
+  quantity: number;
+  recipient: string;
+};
+
 export class AirdropJobStore {
-  jobDetails: Record<
-    string,
-    { nftContractAddress: string; redeemed: number; quantity: number }
-  > = {};
+  jobDetails: Record<string, Airdrop> = {};
   constructor() {}
-  generateAirdropJobDetails(contractAddress: string, quantity: number = 10) {
+  generateAirdropJobDetails(
+    contractAddress: string,
+    recipient: string,
+    quantity: number = 10
+  ) {
     this.jobDetails[nanoid()] = {
       nftContractAddress: contractAddress,
-      redeemed: 0,
+      redeemedBy: [],
       quantity,
+      recipient,
     };
   }
   retrieveAirdropDetails(redeemCode: string) {
     return this.jobDetails[redeemCode];
   }
-  markAirdropRedeemed(redeemCode: string) {
+  listAirdropDetails() {
+    return this.jobDetails;
+  }
+  updateAirdropDetails(id: string, airdropInfo: Partial<Airdrop>) {
+    this.jobDetails[id] = { ...this.jobDetails[id], ...airdropInfo };
+  }
+  deleteAirdrop(id: string) {
+    delete this.jobDetails[id];
+  }
+  markAirdropRedeemed(redeemCode: string, redeemedBy: string) {
     const job = this.jobDetails[redeemCode];
-    if (job.redeemed < job.quantity) {
-      this.jobDetails[redeemCode].redeemed += 1;
-      return;
+    if (job.redeemedBy.length < job.quantity) {
+      this.jobDetails[redeemCode].redeemedBy.push(redeemedBy);
+      return true;
     }
-    throw new Error("Limit exceeded");
+    // throw new Error("Limit exceeded");
+    return false;
   }
 }
