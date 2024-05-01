@@ -9,7 +9,9 @@ export type Airdrop = {
 
 export class AirdropJobStore {
   jobDetails: Record<string, Airdrop> = {};
-  constructor() {}
+  constructor(jobDetails: Record<string, Airdrop> = {}) {
+    this.jobDetails = jobDetails;
+  }
   generateAirdropJobDetails(
     contractAddress: string,
     recipient: string,
