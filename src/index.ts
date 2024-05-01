@@ -53,6 +53,9 @@ app.post(
     const recipient = body.recipient;
     const quantity = body.quantity;
     const success = await airdropNFT(contractAddress, recipient, quantity);
+    if (!success) {
+      res.status(400).send({ success });
+    }
     res.send({ success });
   }
 );
@@ -76,6 +79,9 @@ app.put(
       recipient,
       quantity,
     });
+    if (!success) {
+      res.status(400).send({ success });
+    }
     res.send({ success });
   }
 );
@@ -83,6 +89,7 @@ app.put(
 app.post(
   "/airdrops/redeem/:id",
   checkId,
+  checkSchema({ walletAddress: { isString: true } }),
   async (req: Request, res: Response) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -91,6 +98,9 @@ app.post(
     const id = req.params.id;
     const walletAddress = req.body.walletAddress;
     const success = await redeemNFT(id, walletAddress);
+    if (!success) {
+      res.status(400).send({ success });
+    }
     res.send({ success });
   }
 );
@@ -102,6 +112,9 @@ app.delete("/airdrops/:id", checkId, async (req: Request, res: Response) => {
   }
   const id = req.params.id;
   const success = await deleteAirdrop(id);
+  if (!success) {
+    res.status(400).send({ success });
+  }
   res.send({ success });
 });
 
