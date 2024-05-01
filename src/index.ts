@@ -35,6 +35,7 @@ app.get("/airdrops/:id", checkId, async (req: Request, res: Response) => {
   const result = validationResult(req);
   if (!result.isEmpty()) {
     res.send({ errors: result.array() });
+    return;
   }
   const airdrop = await getAirdrop(req.params.id);
   res.send(airdrop);
@@ -47,6 +48,7 @@ app.post(
     const result = validationResult(req);
     if (!result.isEmpty()) {
       res.send({ errors: result.array() });
+      return;
     }
     const body = req.body;
     const contractAddress = body.contractAddress;
@@ -55,6 +57,7 @@ app.post(
     const success = await airdropNFT(contractAddress, recipient, quantity);
     if (!success) {
       res.status(400).send({ success });
+      return;
     }
     res.send({ success });
   }
@@ -68,6 +71,7 @@ app.put(
     const result = validationResult(req);
     if (!result.isEmpty()) {
       res.send({ errors: result.array() });
+      return;
     }
     const id = req.params.id;
     const body = req.body;
@@ -81,6 +85,7 @@ app.put(
     });
     if (!success) {
       res.status(400).send({ success });
+      return;
     }
     res.send({ success });
   }
@@ -94,12 +99,14 @@ app.post(
     const result = validationResult(req);
     if (!result.isEmpty()) {
       res.send({ errors: result.array() });
+      return;
     }
     const id = req.params.id;
     const walletAddress = req.body.walletAddress;
     const success = await redeemNFT(id, walletAddress);
     if (!success) {
       res.status(400).send({ success });
+      return;
     }
     res.send({ success });
   }
@@ -109,11 +116,13 @@ app.delete("/airdrops/:id", checkId, async (req: Request, res: Response) => {
   const result = validationResult(req);
   if (!result.isEmpty()) {
     res.send({ errors: result.array() });
+    return;
   }
   const id = req.params.id;
   const success = await deleteAirdrop(id);
   if (!success) {
     res.status(400).send({ success });
+    return;
   }
   res.send({ success });
 });
