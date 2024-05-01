@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import {
   listAirdrops,
   getAirdrop,
@@ -20,26 +20,45 @@ const checkAirdropSchema = checkSchema({
 
 const checkId = param("id").isString().escape();
 
+const adminOnlyAuth = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (
+    !req.headers.authorization ||
+    req.headers.authorization !== process.env.AUTH_TOKEN
+  ) {
+    return res.status(403).json({ error: "Invalid authorization" });
+  }
+  next();
+};
+
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK");
 });
 
-app.get("/airdrops", async (req: Request, res: Response) => {
+app.get("/airdrops", adminOnlyAuth, async (req: Request, res: Response) => {
   const airdrops = await listAirdrops();
   res.send(airdrops);
 });
 
-app.get("/airdrops/:id", checkId, async (req: Request, res: Response) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    res.send({ errors: result.array() });
-    return;
+app.get(
+  "/airdrops/:id",
+  checkId,
+  adminOnlyAuth,
+  async (req: Request, res: Response) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.send({ errors: result.array() });
+      return;
+    }
+    const airdrop = await getAirdrop(req.params.id);
+    res.send(airdrop);
   }
-  const airdrop = await getAirdrop(req.params.id);
-  res.send(airdrop);
-});
+);
 
 app.post(
   "/airdrops",
@@ -67,6 +86,7 @@ app.put(
   "/airdrops/:id",
   checkId,
   checkAirdropSchema,
+  adminOnlyAuth,
   async (req: Request, res: Response) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -112,20 +132,25 @@ app.post(
   }
 );
 
-app.delete("/airdrops/:id", checkId, async (req: Request, res: Response) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    res.send({ errors: result.array() });
-    return;
+app.delete(
+  "/airdrops/:id",
+  checkId,
+  adminOnlyAuth,
+  async (req: Request, res: Response) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.send({ errors: result.array() });
+      return;
+    }
+    const id = req.params.id;
+    const success = await deleteAirdrop(id);
+    if (!success) {
+      res.status(400).send({ success });
+      return;
+    }
+    res.send({ success });
   }
-  const id = req.params.id;
-  const success = await deleteAirdrop(id);
-  if (!success) {
-    res.status(400).send({ success });
-    return;
-  }
-  res.send({ success });
-});
+);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
