@@ -33,7 +33,7 @@ app.get("/airdrops", async (req: Request, res: Response) => {
 
 app.get("/airdrops/:id", checkId, async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty) {
+  if (!result.isEmpty()) {
     res.send({ errors: result.array() });
   }
   const airdrop = await getAirdrop(req.params.id);
@@ -45,7 +45,7 @@ app.post(
   checkAirdropSchema,
   async (req: Request, res: Response) => {
     const result = validationResult(req);
-    if (!result.isEmpty) {
+    if (!result.isEmpty()) {
       res.send({ errors: result.array() });
     }
     const body = req.body;
@@ -63,7 +63,7 @@ app.put(
   checkAirdropSchema,
   async (req: Request, res: Response) => {
     const result = validationResult(req);
-    if (!result.isEmpty) {
+    if (!result.isEmpty()) {
       res.send({ errors: result.array() });
     }
     const id = req.params.id;
@@ -85,7 +85,7 @@ app.post(
   checkId,
   async (req: Request, res: Response) => {
     const result = validationResult(req);
-    if (!result.isEmpty) {
+    if (!result.isEmpty()) {
       res.send({ errors: result.array() });
     }
     const id = req.params.id;
@@ -97,7 +97,7 @@ app.post(
 
 app.delete("/airdrops/:id", checkId, async (req: Request, res: Response) => {
   const result = validationResult(req);
-  if (!result.isEmpty) {
+  if (!result.isEmpty()) {
     res.send({ errors: result.array() });
   }
   const id = req.params.id;

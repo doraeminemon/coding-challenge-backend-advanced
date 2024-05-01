@@ -21,6 +21,7 @@ export class AirdropJobStore {
       quantity,
       recipient,
     };
+    return true;
   }
   retrieveAirdropDetails(redeemCode: string) {
     return this.jobDetails[redeemCode];
@@ -30,9 +31,11 @@ export class AirdropJobStore {
   }
   updateAirdropDetails(id: string, airdropInfo: Partial<Airdrop>) {
     this.jobDetails[id] = { ...this.jobDetails[id], ...airdropInfo };
+    return true;
   }
   deleteAirdrop(id: string) {
     delete this.jobDetails[id];
+    return true;
   }
   markAirdropRedeemed(redeemCode: string, redeemedBy: string) {
     const job = this.jobDetails[redeemCode];
